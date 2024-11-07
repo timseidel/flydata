@@ -8,7 +8,7 @@ R package version 0.1.0, http://github.com/moderndive/nycflights23.
 
 FLYDATA is an imaginary company only used to increase immersion.
 
-# flydata
+# FLYDATA
 Your Co-Pilot in Data Driven Decisions. 
 
 ## Briefing
@@ -28,7 +28,7 @@ as we look to optimize our data workflows. This is a perfect opportunity for you
 to gain hands-on experience with our coding style, aligning with our mission to
 be "Your Co-Pilot in Data-Driven Decisions."
 
-The ultimate goal of this exercise is to enhance and complete a Markdown 
+The ultimate goal is to enhance and complete a Markdown 
 document that showcases Flydata's capabilities to potential clients. You'll 
 begin by cloning the GitHub repository at https://github.com/timseidel/flydata/ 
 into your RStudio instance. Within this repository, you'll find a "data" folder 
@@ -56,5 +56,7 @@ Your hard work is already appreciated, and I'm excited to see your
 contributions as we at FLYDATA soar to new heights together.
 
 Fly high,
+
 Mary
+
 Head of Empirical Analysis
