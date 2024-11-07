@@ -1,0 +1,278 @@
+<div style="text-align: center;">
+  <img src="media/logo.png" alt="FLYDATA Logo" style="width:500px; margin-top: 50px; margin-bottom: 50px"/>
+</div>
+
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Load necessary libraries. These packages should be installed in your R environment.
+library(tidyverse)  # For data manipulation and visualization
+library(nycflights23)  # Contains the flights dataset from NYC in 2013
+library(plotly)  # For creating interactive plots
+library(knitr)  # For elegant table generation
+library(kableExtra)  # To enhance knitr tables with additional styles
+library(GGally)
+
+# Set chunk options to hide R code in the output and suppress warnings
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Set a global theme for all plots to ensure consistent styling
+theme_set(theme_minimal(base_family = "Arial"))
+```
+
+## Introduction
+
+Welcome to FLYDATA, where we transform aviation data into actionable insights. This demonstration showcases our analytical prowess with an exploration of the **flights** dataset, capturing New York City flights in 2023. Our capabilities allow us to tackle questions such as:
+
+<!-- FYI: These are the questions for Part I, 
+          you will find code fields to fill in down below. -->
+
+1.    What is the average, median, and standard deviation for departure delay, arrival delay, and air time?
+2.    What the number of flights for each airline?
+3.    Are there seasonal trend (e.g. number of flights per month)?
+4.    How high are flight departure delays throughout the day?
+5.    What is the relationship between air time and distance?
+
+<!-- FYI: These are the questions for Part II, do them at your leisure. -->
+
+6.    Which routes observe the most flights, and how can this inform operational decisions?
+7.    Are certain days more prone to operational disruptions?
+8.    What insights can be derived from analyzing aircraft age in relation to flight frequency?
+9.    What factors influence customer satisfaction?
+
+
+
+```{r load-data, include=FALSE}
+# This is where you should load the data you cleaned up and exportet in the import.R Document!
+```
+
+## 1. Descriptive Statistics
+
+### Our Capabilities
+
+At FLYDATA, we specialize in transforming raw aviation data into actionable insights that empower our customers to optimize their operations and enhance customer satisfaction. By providing critical statistics such as the average, median, and standard deviation for departure delay, arrival delay, and air time, we enable our clients to gain a comprehensive understanding of their flight punctuality and operational efficiency.
+
+### Analysis
+
+```{r mean_median_sd}
+# Summarize the mean, median, and standard deviation for departure delay, arrival delay, and air time
+# Use what you learned about the six verbes and display your summary as a table :) 
+
+
+# Print the summary
+
+# Print the summary (in a nicer looking way)
+
+
+```
+### Findings
+
+
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 2. Number of Flights Analysis
+
+### Capabilities
+
+Knowing the total flight count for each airline provides our clients with crucial information to assess market share, identify competitive strengths, and spot potential opportunities for collaboration or strategic alliances. This data allows airlines to benchmark themselves against competitors, evaluate their fleet utilization, and optimize route planning.
+
+### Analysis
+
+```{r number_flights}
+# Transform the Data
+
+
+# Join with airlines for full name and print
+
+
+# Print the summary
+
+
+# Print the summary (in a nicer looking way)
+
+```
+### Findings
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 3. Seasonal Trends
+
+### Our Capabilities
+
+We harness the power of data analytics to uncover seasonal trends that are pivotal for strategic planning and operational efficiency in the aviation industry. Analyzing the number of flights per month allows us to identify seasonal patterns that have significant implications for airlines and airports alike.
+
+
+```{r seasonal_trends, fig.width=10}
+# Recode months into names and prepare data for plotting
+
+
+# Create a plot
+
+
+
+# Wrap the plot with Plotly for interactivity
+
+```
+### Findings
+
+
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+
+## 4. Departure and Arrival Delays throughout the Day
+
+### Our Capabilities
+
+By providing insights into these patterns, we help airlines and airports optimize their schedules, enhance ground operations, and minimize delays. This data-driven approach not only enhances operational effectiveness but also significantly improves passenger experience by reducing wait times and maintaining reliable schedules.
+
+
+```{r delay_throughout_day, fig.width=10}
+# Transform the data
+
+# Plot
+
+```
+### Findings
+
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+
+## 5. The Relationship between Airtime and Distance?
+
+### Our Capabilities
+
+By offering a detailed analysis of the air time and distance relationship, we enable airlines to optimize route planning, improve flight scheduling, and enhance overall operational performance, ensuring a balance between efficiency, cost, and customer satisfaction.
+
+
+```{r distance_time, fig.width=10}
+# Plot
+
+```
+
+### Findings
+
+<!-- What are your findings? -->
+
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 6. Busiest Routes
+
+### Question
+
+FLYDATA begins by identifying the busiest routes. Insights into high-traffic corridors can drive strategic planning for airlines and airports.
+
+
+```{r busiest-routes-table, include=FALSE}
+# Transform so you get routes and count the number of flights!
+
+# Display a table
+
+```
+
+
+```{r busiest-routes-plot, fig.width=10}
+# Plot
+
+```
+
+### Findings
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+
+
+## 7. Delays by Day of the Week
+
+### Question
+
+FLYDATA investigates whether certain days endure more delays, thus suggesting staffing and scheduling efficiency opportunities.
+
+### Analysis
+
+```{r delays-weekday-table}
+# Transform Data
+
+# Display Table
+
+```
+
+
+```{r delays-weekday-plot, fig.width=10}
+# Plot
+
+```
+
+### Findings
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 8. Aircraft Age Analysis
+
+### Question
+
+Our analysis examines the relationship between aircraft age and usage, providing insights into fleet management strategies.
+
+
+```{r aircraft-age-table, include=FALSE}
+# Prepare the data with plane ages, including both number of flights and number of planes per airline
+
+```
+
+```{r aircraft-age-plot, fig.width=10, fig.height=8}
+# Think about how to best vizualize that much infomation!
+
+```
+
+### Findings
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 9. Influences on Customer Satisfaction
+
+### Question
+Customer satisfaction is a multidimensional aspect that's pivotal for the sustained success and reputation of airlines and airports. At FLYDATA, we analyze various factors influencing customer satisfaction to provide our clients with insights for enhancing passenger experiences and ensuring customer loyalty. Here's a look at some key insights into customer satisfaction:
+
+<!-- As you may see, the data for customer satisfaction is messy and not well
+strctured. You need to transform it, to get to interesting information.
+Its best to do so in the import Document and only visualize here!
+Please note that there are many ways to achieve this and even more things
+one can plot with this data.-->
+
+```{r satisfaction, fig.width=10}
+# Think about how to best vizualize that much infomation!
+
+```
+
+### Conclusion
+<!-- What is your conclusion? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## Wind-Up!
+
+This demonstration from FLYDATA illustrates how our data-driven insights can shape operational excellence in the aviation industry. From understanding route dynamics to optimizing aircraft usage, FLYDATA empowers stakeholders to make informed decisions. For bespoke analysis and deeper dives into your specific needs, connect with our team to explore customized solutions.
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 200px"> </div>

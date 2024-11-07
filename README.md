@@ -32,8 +32,8 @@ The ultimate goal is to enhance and complete a Markdown
 document that showcases Flydata's capabilities to potential clients. You'll 
 begin by cloning the GitHub repository at https://github.com/timseidel/flydata/ 
 into your RStudio instance. Within this repository, you'll find a "data" folder 
-containing all the necessary datasets. There's also a "01_import.R" script 
-intended for data import. However, similar to the Markdown document, 
+containing all the necessary datasets. There's also a "Import.R" script 
+intended for data import and cleaning. However, similar to the Markdown document, 
 the code in "01_import.R" is either missing or not functioning correctly. 
 Your task is to develop this script alongside the Markdown document, 
 performing data import, cleaning, transformation, and analysis.

@@ -1,0 +1,478 @@
+<div style="text-align: center;">
+  <img src="media/logo.png" alt="FLYDATA Logo" style="width:500px; margin-top: 50px; margin-bottom: 50px"/>
+</div>
+
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Load necessary libraries. These packages should be installed in your R environment.
+library(rio)
+library(tidyverse)  # For data manipulation and visualization
+library(plotly)  # For creating interactive plots
+library(knitr)  # For elegant table generation
+library(kableExtra)  # To enhance knitr tables with additional styles
+library(GGally)
+
+# Set chunk options to hide R code in the output and suppress warnings
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Set a global theme for all plots to ensure consistent styling
+theme_set(theme_minimal(base_family = "Arial"))
+```
+
+## Introduction
+
+Welcome to FLYDATA, where we transform aviation data into actionable insights. This demonstration showcases our analytical prowess with an exploration of the **nycflights23** dataset, capturing New York City flights in 2013. Our capabilities allow us to tackle questions such as:
+
+<!-- FYI: These are the questions for Part I, 
+          you will find code fields to fill in down below. -->
+
+1.    What is the average, median, and standard deviation for departure delay, arrival delay, and air time?
+2.    What the number of flights for each airline?
+3.    Are there seasonal trend (e.g. number of flights per month)?
+4.    How high are flight departure delays throughout the day?
+5.    What is the relationship between air time and distance?
+
+<!-- FYI: These are the questions for Part II, do them at your leisure. -->
+
+6.    Which routes observe the most flights, and how can this inform operational decisions?
+7.    Are certain days more prone to operational disruptions?
+8.    What insights can be derived from analyzing aircraft age in relation to flight frequency?
+9.    What factors influence customer satisfaction?
+
+
+
+```{r load-data, include=FALSE}
+# This is where you should load the data you cleaned up and exportet in the import.R Document!
+flights <- import("data/clean/flights.rds")
+planes <- import("data/clean/planes.rds")
+airlines <- import("data/clean/airlines.rds")
+```
+
+## 1. Descriptive Statistics
+
+### Our Capabilities
+
+At FLYDATA, we specialize in transforming raw aviation data into actionable insights that empower our customers to optimize their operations and enhance customer satisfaction. By providing critical statistics such as the average, median, and standard deviation for departure delay, arrival delay, and air time, we enable our clients to gain a comprehensive understanding of their flight punctuality and operational efficiency.
+
+### Analysis
+
+```{r mean_median_sd}
+# Summarize the mean, median, and standard deviation for departure delay, arrival delay, and air time
+# Use what you learned about the six verbes and display your summary as a table :) 
+flights_summary <- flights |>
+  reframe(
+    averages = c(mean(dep_delay, na.rm = TRUE),
+                 mean(arr_delay, na.rm = TRUE),
+                 mean(air_time, na.rm = TRUE)),
+    median = c(median(dep_delay, na.rm = TRUE),
+               median(arr_delay, na.rm = TRUE),
+               median(air_time, na.rm = TRUE)),
+    standard_deviation = c(sd(dep_delay, na.rm = TRUE),
+                           sd(arr_delay, na.rm = TRUE),
+                           sd(air_time, na.rm = TRUE))
+  ) |> mutate(variable = c("Departure Delay","Arrival Delay","Airtime"))
+
+# Print the summary
+#print(flights_summary)
+
+# Print the summary (in a nicer looking way)
+kable(flights_summary, "html") |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+
+```
+### Findings
+Departure and arrival delays both have negative medians, suggesting that flights were often early, yet the means are positive, indicating a significant number of very late flights. The large standard deviations across all variables reflect considerable variability in delays and airtime.
+
+
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 2. Number of Flights Analysis
+
+### Capabilities
+
+Knowing the total flight count for each airline provides our clients with crucial information to assess market share, identify competitive strengths, and spot potential opportunities for collaboration or strategic alliances. This data allows airlines to benchmark themselves against competitors, evaluate their fleet utilization, and optimize route planning.
+
+### Analysis
+
+```{r number_flights}
+flights_by_airline <- flights |>
+  group_by(carrier) |>
+  summarize(number_of_flights = n()) |>
+  arrange(desc(number_of_flights))
+
+# Join with airlines for full name and print
+flights_by_airline <- flights_by_airline |>
+  left_join(airlines, by = "carrier")
+
+# Print the summary
+# print(flights_by_airline)
+
+# Print the summary (in a nicer looking way)
+kable(flights_by_airline, "html") |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+### Findings
+Republic Airline flew the highest number of flights, indicating its significant role in overall air traffic compared to other carriers, while Hawaiian Airlines Inc. and Envoy Air operated the fewest flights, suggesting a more limited operational scale or niche markets. The considerable disparity in flight count among carriers emphasizes the varied market presence and capacity of airlines, with larger carriers like Republic and United Air Lines Inc. covering more extensive networks.
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 3. Seasonal Trends
+
+### Our Capabilities
+
+We harness the power of data analytics to uncover seasonal trends that are pivotal for strategic planning and operational efficiency in the aviation industry. Analyzing the number of flights per month allows us to identify seasonal patterns that have significant implications for airlines and airports alike.
+
+
+```{r seasonal_trends, fig.width=10}
+# Recode months into names and prepare data for plotting
+flights_by_month <- flights |>
+  mutate(
+    month = factor(month.abb[month], levels = month.abb)  # Convert month number to abbreviated name
+  ) |>
+  group_by(month) |>
+  summarize(number_of_flights = n())  # Count flights per month
+
+# Create a bar plot for flights per month with custom styling
+flights_by_month_plot <- ggplot(flights_by_month, aes(x = month, y = number_of_flights)) +
+  geom_bar(stat = "identity", fill = "#8434fc", width = 0.7) +  # Custom color and adjust bar width
+  labs(
+    title = "Number of Flights per Month",
+    x = "Month",
+    y = "Number of Flights",
+    caption = "Data Source: Your Data Source Here"
+  ) +
+  theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
+  )
+
+
+# Wrap the plot with Plotly for interactivity
+ggplotly(flights_by_month_plot)
+```
+### Findings
+The data reveals that March had the highest number of flights at 39,514, possibly due to increased demand during spring break or seasonal travel. Meanwhile, February experienced the fewest flights with 34,761, which might be attributable to it being the shortest month and potentially facing less demand in winter travel.
+
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+
+## 4. Departure and Arrival Delays throughout the Day
+
+### Our Capabilities
+
+By providing insights into these patterns, we help airlines and airports optimize their schedules, enhance ground operations, and minimize delays. This data-driven approach not only enhances operational effectiveness but also significantly improves passenger experience by reducing wait times and maintaining reliable schedules.
+
+
+```{r delay_throughout_day, fig.width=10}
+delay_by_hour <- flights |>
+  group_by(hour) |>
+  summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+            avg_arr_delay = mean(arr_delay, na.rm = TRUE))
+
+# Plotting average departure delay per hour
+delay_by_hour_plot <- delay_by_hour |>
+  ggplot() +
+  geom_line(aes(x = hour, y = avg_dep_delay, color = "dep_delay"), linewidth = 1) +
+  geom_line(aes(x = hour, y = avg_arr_delay, color = "arr_delay"), linewidth = 1) +
+  scale_color_manual(values = c("dep_delay" = "#8434fc", "arr_delay" = "#aca9c6")) +
+  labs(
+    title = "Average Delay by Hour",
+    x = "Hour of Day", 
+    y = "Average Delay (in minutes)",
+    color = "Delay Type"
+  ) +
+    theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
+  )
+
+ggplotly(delay_by_hour_plot)
+```
+### Findings
+The data indicates that both average departure and arrival delays tend to increase as the day progresses, with the highest delays occurring late at night; for instance, the average departure delay peaks at 32.04 minutes at 11 PM. This pattern likely arises due to the cumulative effect of delays accumulating throughout the day and a possible reduction in airport operations or staff capacity during nighttime hours.
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+
+## 5. The Relationship between Airtime and Distance?
+
+### Our Capabilities
+
+By offering a detailed analysis of the air time and distance relationship, we enable airlines to optimize route planning, improve flight scheduling, and enhance overall operational performance, ensuring a balance between efficiency, cost, and customer satisfaction.
+
+
+```{r distance_time, fig.width=10}
+air_time_distance_plot <- flights |>
+  ggplot(aes(x = distance, y = air_time)) +
+  geom_point(alpha = 0.3, color = "#9282ee") +
+  geom_smooth(method = "lm", col = "#fc54fc") +
+  labs(title = "Air Time vs. Distance", x = "Distance (miles)", y = "Air Time (minutes)") +
+  theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
+  )
+air_time_distance_plot
+```
+
+### Findings
+A near-perfect correlation between distance and airtime suggests that, as expected, longer distances result in proportionally longer airtimes, indicating efficient and consistent flight operations without major disruptions. This correlation confirms that most flights maintain a consistent speed and route efficiency across varying distances, reinforcing that the flight time is, for the most part, directly dependent on the distance traveled.
+<!-- What are your findings? -->
+
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 6. Busiest Routes
+
+### Question
+
+FLYDATA begins by identifying the busiest routes. Insights into high-traffic corridors can drive strategic planning for airlines and airports.
+
+
+```{r busiest-routes-table, include=FALSE}
+busiest_routes <- flights |>
+  group_by(origin, dest) |>
+  summarize(number_of_flights = n()) |>
+  arrange(desc(number_of_flights)) |>
+  ungroup()
+
+knitr::kable(head(busiest_routes, 10), caption = "Top 10 Busiest Routes from NYC")
+```
+
+
+```{r busiest-routes-plot, fig.width=10}
+busiest_routes_plot <- busiest_routes |>
+  top_n(10, number_of_flights) |>
+  ggplot(aes(x = reorder(paste(origin, dest, sep = " - "), number_of_flights), 
+             y = number_of_flights)) +
+  geom_bar(stat = "identity", fill = "#8434fc") +  # Using Electric Violet for the bars
+  geom_text(aes(label = number_of_flights), hjust = -0.2, color = "#272727", size = 3.5) +  # Adding labels
+  coord_flip() +
+  labs(
+    title = "Top 10 Busiest Routes from NYC",
+    subtitle = "Based on number of flights",
+    x = "Route",
+    y = "Number of Flights"
+  ) +
+  theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
+  )
+
+ggplotly(busiest_routes_plot)
+```
+
+### Findings
+The route from John F. Kennedy International Airport (JFK) in New York to Los Angeles International Airport (LAX) is the busiest, with 10,045 flights, underscoring the high demand for travel between New York City and Los Angeles, which are major hubs for both business and leisure. Similarly, the route from LaGuardia Airport (LGA) in New York to Chicago O'Hare International Airport (ORD) follows closely with 9,923 flights, highlighting the importance of the connection between New York City and Chicago.
+
+On the other hand, flights like the one from Newark Liberty International Airport (EWR) to University Park Airport (SCE) in State College, Pennsylvania, and from LaGuardia (LGA) to Blue Grass Airport (LEX) in Lexington, Kentucky, each had only one flight, indicating these routes may serve niche markets or specific passenger needs rather than regular demand.
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+
+
+## 7. Delays by Day of the Week
+
+### Question
+
+FLYDATA investigates whether certain days endure more delays, thus suggesting staffing and scheduling efficiency opportunities.
+
+### Analysis
+
+```{r delays-weekday-table}
+flights_dayofweek <- flights |>
+  mutate(weekday = weekdays(as.Date(paste(year, month, day, sep = "-")))) |>
+  group_by(weekday) |>
+  summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE)) |>
+  arrange(match(weekday, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")))
+
+knitr::kable(flights_dayofweek, caption = "Average Departure Delay by Day of the Week")
+```
+
+
+```{r delays-weekday-plot, fig.width=10}
+flights_dayofweek_plot <- flights_dayofweek |>
+  ggplot(aes(x = reorder(weekday, avg_dep_delay), y = avg_dep_delay)) +  # Reordering for better arrangement
+  geom_bar(stat = "identity", fill = "#8434fc", width = 0.7) +  # Using custom color for fill
+  geom_text(aes(label = round(avg_dep_delay, 1)), vjust = -0.3, size = 3, color = "black") +  # Adding labels above bars
+  labs(
+    title = "Average Departure Delay by Day of the Week",
+    subtitle = "The data is clear - fly on weekdays to get off the ground on time!",
+    x = "Day of the Week",
+    y = "Average Departure Delay (minutes)"
+  ) +
+  theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
+  )
+
+print(flights_dayofweek_plot)
+```
+
+### Findings
+The data suggests that Sundays and Fridays experience the highest average departure delays, with 16.99 and 16.58 minutes respectively, which may be influenced by increased travel activity and congestion typically associated with weekends and the close of the work week. Conversely, Tuesdays and Wednesdays show the lowest average delays, at 10.86 and 10.61 minutes respectively, possibly reflecting reduced travel demand and smoother airport operations mid-week.
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 8. Aircraft Age Analysis
+
+### Question
+
+Our analysis examines the relationship between aircraft age and usage, providing insights into fleet management strategies.
+
+
+```{r aircraft-age-table, include=FALSE}
+# Preparing data with plane ages, including both number of flights and number of planes per airline
+plane_ages_data <- flights |>
+  left_join(planes, by = "tailnum") |>
+  left_join(airlines, by = "carrier") |>
+  mutate(plane_age = 2023 - year.y) |>
+  group_by(plane_age, name) |>
+  summarise(
+    number_of_flights = n(),
+    number_of_planes = n_distinct(tailnum)
+  )
+```
+
+```{r aircraft-age-plot, fig.width=10, fig.height=8}
+# Create the bubble plot with number of planes encoded by color gradient
+plane_ages_plot <- plane_ages_data |>
+  ggplot(aes(x = plane_age, y = name, size = number_of_flights, fill = number_of_planes)) +
+  geom_point(alpha = 0.7, shape = 21) +
+  scale_size_continuous(range = c(2, 12), name = "Number of Flights") +
+  scale_fill_gradient(low = "#ebd7f5", high = "#241cfc", name = "Number of Planes") +  # Gradient for number of planes
+  labs(
+    title = "Number of Flights and Fleet Size by Plane Age and Carrier",
+    x = "Plane Age (Years)",
+    y = "Carrier"
+  ) +
+  theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5"),  # Soft grid lines for a subtle look
+    legend.position = "bottom",
+    legend.box = "vertical",
+    legend.title = element_text(face = "bold")
+  )
+
+plane_ages_plot
+```
+
+### Findings
+The data highlights that United Air Lines Inc. operates the most flights with planes aged 8 years, boasting 8,989 flights, indicating a significant utilization of relatively mature yet modern aircraft. In contrast, there are various carriers, such as Alaska Airlines Inc. and Allegiant Air, with newer and fewer planes, reflecting different fleet management strategies or market presence, focusing perhaps on scheduled short-haul routes with newer aircraft. Additionally, the varied number of planes across the age spectrum suggests different lifecycle stages within each airline's fleet, with some like Delta and United maintaining older aircraft but still operating a substantial number of flights, signifying well-maintained fleets despite the age.
+<!-- What are your findings? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## 9. Influences on Customer Satisfaction
+
+### Question
+Customer satisfaction is a multidimensional aspect that's pivotal for the sustained success and reputation of airlines and airports. At FLYDATA, we analyze various factors influencing customer satisfaction to provide our clients with insights for enhancing passenger experiences and ensuring customer loyalty. Here's a look at some key insights into customer satisfaction:
+
+<!-- As you may see, the data for customer satisfaction is messy and not well
+strctured. You need to transform it, to get to interesting information.
+Its best to do so in the import Document and only visualize here!
+Please note that there are many ways to achieve this and even more things
+one can plot with this data.-->
+
+```{r satisfaction, fig.width=10}
+
+if (!is.null(flights$satisfaction)) {
+  set.seed(123) # For reproducibility
+sampled_flights <- flights %>%
+  group_by(carrier) %>%
+  sample_n(size = min(100, n()), replace = FALSE)
+
+delay_satisfaction_carrier_plot <- sampled_flights |>
+  filter(!carrier %in% c("WN", "YX", "G4")) |>
+  ggplot(aes(x = arr_delay, y = satisfaction, color = carrier)) +
+  geom_point(alpha = 0.5, size = 1.5, position = position_jitter(width = 5, height = 0.2)) +
+  labs(
+    title = "Customer Satisfaction vs. Arrival Delay by Carrier",
+    x = "Arrival Delay (minutes)",
+    y = "Average Customer Satisfaction"
+  ) +
+  theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
+  ) + 
+  scale_color_brewer(palette = "Set3") +  # Customize color palette
+  facet_wrap(~ carrier, scales = "free_y", ncol = 4)  # Separate plots for each carrier
+
+print(delay_satisfaction_carrier_plot)
+}
+
+```
+
+### Conclusion
+The data illustrates a negative relationship between satisfaction and arrival delays, with higher satisfaction scores often associated with lower or negative delay times. Passengers tend to have low satisfaction when delays exceed longer negative numbers, which is expected since negative delays suggest flights arrived earlier than the scheduled time. Conversely, when passengers experience significant positive delays (e.g., an arrival delay of 65 or 107 minutes), satisfaction scores are notably lower, indicating dissatisfaction with these late arrivals. This pattern underscores the impact of timeliness on passenger satisfaction, where early or on-time arrivals contribute to a more positive travel experience than significant delays.
+<!-- What is your conclusion? -->
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 100px"> </div>
+
+## Wind-Up!
+
+This demonstration from FLYDATA illustrates how our data-driven insights can shape operational excellence in the aviation industry. From understanding route dynamics to optimizing aircraft usage, FLYDATA empowers stakeholders to make informed decisions. For bespoke analysis and deeper dives into your specific needs, connect with our team to explore customized solutions.
+
+<!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
+<div style="text-align: center; margin-bottom: 200px"> </div>
