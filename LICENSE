@@ -19,3 +19,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+This project uses data from the nycflights23 package:
+Ismay C, Couch S, Wickham H (2024). nycflights23: Flights and Other Useful 
+Metadata for NYC outbound flights in 2023. 
+R package version 0.1.0, http://github.com/moderndive/nycflights23. 
+
+FLYDATA is an imaginary company used to increase immersion.
