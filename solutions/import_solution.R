@@ -24,11 +24,19 @@ flights$arr_time <- as.numeric(flights$arr_time)
 flights <- flights |>
   rename(month = monthh)
 
+# explore your data. e.g. :
+hist(flights$dep_time) # there are values lower than 0?
+min(flights$dep_time) # -99 seems to be used for NAs
+# or something like:
+# sorting can be used as a trick for large
+sort(table(flights$tailnum), decreasing = TRUE)
+
 # Replace erroneous or placeholder values with NA
 flights <- flights %>%
   # Convert -99 in numeric columns to NA
-  mutate(across(
-    where(is.numeric),
+  mutate(across( # across all collums
+    where(is.numeric), # tests for numeric data type
+    # if -99: make it NA, else: do nothing, return data
     ~ ifelse(. == -99, NA, .)
   )) %>%
   # Convert "fehlend" in character columns to NA

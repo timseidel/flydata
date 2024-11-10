@@ -13,7 +13,7 @@ library(tidyverse)  # For data manipulation and visualization
 library(plotly)  # For creating interactive plots
 library(knitr)  # For elegant table generation
 library(kableExtra)  # To enhance knitr tables with additional styles
-library(GGally)
+library(GGally) # More Stuff for ggPlot2
 
 # Set chunk options to hide R code in the output and suppress warnings
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)

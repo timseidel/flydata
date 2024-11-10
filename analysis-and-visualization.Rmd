@@ -9,17 +9,12 @@ output: html_document
 ```{r setup, include=FALSE}
 # Load necessary libraries. These packages should be installed in your R environment.
 library(tidyverse)  # For data manipulation and visualization
-library(nycflights23)  # Contains the flights dataset from NYC in 2013
-library(plotly)  # For creating interactive plots
-library(knitr)  # For elegant table generation
-library(kableExtra)  # To enhance knitr tables with additional styles
-library(GGally)
+# ...
+# ...
 
 # Set chunk options to hide R code in the output and suppress warnings
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
-# Set a global theme for all plots to ensure consistent styling
-theme_set(theme_minimal(base_family = "Arial"))
 ```
 
 ## Introduction
