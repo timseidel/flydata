@@ -30,7 +30,7 @@ Welcome to FLYDATA, where we transform aviation data into actionable insights. T
 4.    How high are flight departure delays throughout the day?
 5.    What is the relationship between air time and distance?
 
-<!-- FYI: These are the questions for Part II, do them at your leisure. -->
+<!-- FYI: These are the questions for Part II, do them at your own leisure. -->
 
 6.    Which routes observe the most flights, and how can this inform operational decisions?
 7.    Are certain days more prone to operational disruptions?
