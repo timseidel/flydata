@@ -3,7 +3,7 @@
 
 # Import Data ----------
 
-# Import raw data from RDS files for flights, planes, and airlines
+# Import raw data from the .RDS files for flights, planes, and airlines
 
 
 # Data Clean-Up --------
@@ -15,7 +15,7 @@
 # Replace erroneous or placeholder values with NA
 
 # Save Clean Data
-# Export the cleaned datasets back to RDS files for storage and future use
+# Export the cleaned datasets back to a .RDS file for storage and future use
 
 
 # Combine and Analyze Customer Satisfaction Data --------
@@ -28,4 +28,4 @@
 
 # Final Integration
 # Create a flight_id column for `flights` to enable proper data merging
-# Export the cleaned datasets back to RDS files for storage and future use
+# Export the cleaned datasets back to a .RDS file for storage and future use
