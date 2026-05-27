@@ -75,11 +75,14 @@ rm(customer_satisfaction_1,
    customer_satisfaction_3,
    customer_satisfaction_4)
 
-# Calculate mean satisfaction for each flight based on survey questions
+# Calculate mean satisfaction per dimension for each flight
 customer_satisfaction |> 
-  mutate(satisfaction = rowMeans(customer_satisfaction[,4:6])) |> # Compute row-wise mean for specified columns
   group_by(flight_id) |>                                          # Group data by flight_id
-  summarise(satisfaction = mean(satisfaction)) -> flight_satisfaction # Aggregate mean satisfaction by flight_id
+  summarise(
+    punctuality_sat = mean(punctuality_sat, na.rm = TRUE),        # Mean punctuality rating
+    comfort_sat = mean(comfort_sat, na.rm = TRUE),                # Mean comfort rating
+    crew_sat = mean(crew_sat, na.rm = TRUE)                       # Mean crew rating
+  ) -> flight_satisfaction                                        # Store aggregated satisfaction
 
 # Remove the combined customer satisfaction dataset to free up memory
 rm(customer_satisfaction)
@@ -92,6 +95,6 @@ flights <- flights %>%
   # Join the flight satisfaction data with the flights dataset based on flight_id
   left_join(flight_satisfaction, by = "flight_id")
 
-export(flights, "data/clean/flights.rds")
+rio::export(flights, "data/clean/flights.rds")
 
 rm(flight_satisfaction)

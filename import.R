@@ -36,7 +36,7 @@ dir.create("data/clean", showWarnings = FALSE)
 # Check the first few rows of the first dataset to understand its structure
 # Combine all customer satisfaction datasets into one data frame
 # Clean up workspace by removing individual datasets post-combination
-# Calculate mean satisfaction for each flight based on survey questions
+# Calculate mean satisfaction per dimension (punctuality, comfort, crew) for each flight
 # Remove the combined customer satisfaction dataset to free up memory
 
 # Final Integration

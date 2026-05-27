@@ -383,33 +383,49 @@ Its best to do so in the import Document and only visualize here!
 Please note that there are many ways to achieve this and even more things
 one can plot with this data.-->
 
-```{r satisfaction, fig.width=10}
+```{r satisfaction, fig.width=12, fig.height=5}
 
-if (!is.null(flights$satisfaction)) {
-  set.seed(123) # For reproducibility
-sampled_flights <- flights %>%
-  group_by(carrier) %>%
-  sample_n(size = min(100, n()), replace = FALSE)
+if (!is.null(flights$punctuality_sat)) {
+  set.seed(123)
+  sampled_flights <- flights %>%
+    group_by(carrier) %>%
+    sample_n(size = min(100, n()), replace = FALSE)
 
-delay_satisfaction_carrier_plot <- sampled_flights |>
-  filter(!carrier %in% c("WN", "YX", "G4")) |>
-  ggplot(aes(x = arr_delay, y = satisfaction, color = carrier)) +
-  geom_point(alpha = 0.5, size = 1.5, position = position_jitter(width = 5, height = 0.2)) +
-  labs(
-    title = "Customer Satisfaction vs. Arrival Delay by Carrier",
-    x = "Arrival Delay (minutes)",
-    y = "Average Customer Satisfaction"
-  ) +
-  scale_color_brewer(palette = "Set3") +  # Customize color palette
-  facet_wrap(~ carrier, scales = "free_y", ncol = 4)  # Separate plots for each carrier
+  plot_data <- sampled_flights |>
+    filter(!carrier %in% c("WN", "YX", "G4")) |>
+    pivot_longer(
+      cols = c(punctuality_sat, comfort_sat, crew_sat),
+      names_to = "dimension",
+      values_to = "satisfaction"
+    ) |>
+    mutate(dimension = case_when(
+      dimension == "punctuality_sat" ~ "Punctuality",
+      dimension == "comfort_sat" ~ "Comfort",
+      dimension == "crew_sat" ~ "Crew Service"
+    ))
 
-print(delay_satisfaction_carrier_plot)
+  delay_satisfaction_plot <- plot_data |>
+    ggplot(aes(x = arr_delay, y = satisfaction, color = carrier)) +
+    geom_point(alpha = 0.25, size = 1, position = position_jitter(width = 5, height = 0.2)) +
+    geom_smooth(aes(group = 1), method = "loess", se = FALSE,
+                color = "black", linewidth = 0.8) +
+    labs(
+      title = "Customer Satisfaction vs. Arrival Delay",
+      subtitle = "Punctuality drops with delay; comfort and crew service depend on other factors",
+      x = "Arrival Delay (minutes)",
+      y = "Satisfaction (1-5)",
+      color = "Carrier"
+    ) +
+    scale_color_brewer(palette = "Set3") +
+    facet_wrap(~ dimension, ncol = 3)
+
+  print(delay_satisfaction_plot)
 }
 
 ```
 
 ### Conclusion
-The data illustrates a negative relationship between satisfaction and arrival delays, with higher satisfaction scores often associated with lower or negative delay times. Passengers tend to have low satisfaction when delays exceed longer negative numbers, which is expected since negative delays suggest flights arrived earlier than the scheduled time. Conversely, when passengers experience significant positive delays (e.g., an arrival delay of 65 or 107 minutes), satisfaction scores are notably lower, indicating dissatisfaction with these late arrivals. This pattern underscores the impact of timeliness on passenger satisfaction, where early or on-time arrivals contribute to a more positive travel experience than significant delays.
+The three satisfaction dimensions reveal different stories. Punctuality satisfaction drops sharply as delays increase — passengers clearly notice when flights are late. Comfort and crew service ratings, however, remain relatively stable regardless of delay. This suggests that comfort is more influenced by factors like aircraft age and seat configuration, while crew service depends on the airline itself rather than operational punctuality. Understanding these distinctions allows airlines to target their improvement efforts where they matter most for each aspect of the passenger experience.
 <!-- What is your conclusion? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
