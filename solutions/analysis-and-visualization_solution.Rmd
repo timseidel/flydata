@@ -19,8 +19,20 @@ library(GGally) # More Stuff for ggPlot2
 # Set chunk options to hide R code in the output and suppress warnings
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
-# Set a global theme for all plots to ensure consistent styling
-theme_set(theme_minimal(base_family = "Arial"))
+# Define a reusable theme for consistent plot styling
+theme_flydata <- theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")
+  )
+
+# Set as default for all plots
+theme_set(theme_flydata)
 ```
 
 ## Introduction
@@ -149,18 +161,7 @@ flights_by_month_plot <- ggplot(flights_by_month, aes(x = month, y = number_of_f
     x = "Month",
     y = "Number of Flights",
     caption = "Data Source: Your Data Source Here"
-  ) +
-  theme_minimal(base_family = "Arial") +
-  theme(
-    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
-    plot.subtitle = element_text(size = 10, color = "#9282ee"),
-    axis.title.x = element_text(size = 12, color = "#272727"),
-    axis.title.y = element_text(size = 12, color = "#272727"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
-    axis.text.y = element_text(size = 10, color = "#272727"),
-    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
   )
-
 
 # Wrap the plot with Plotly for interactivity
 ggplotly(flights_by_month_plot)
@@ -198,16 +199,6 @@ delay_by_hour_plot <- delay_by_hour |>
     x = "Hour of Day", 
     y = "Average Delay (in minutes)",
     color = "Delay Type"
-  ) +
-    theme_minimal(base_family = "Arial") +
-  theme(
-    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
-    plot.subtitle = element_text(size = 10, color = "#9282ee"),
-    axis.title.x = element_text(size = 12, color = "#272727"),
-    axis.title.y = element_text(size = 12, color = "#272727"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
-    axis.text.y = element_text(size = 10, color = "#272727"),
-    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
   )
 
 ggplotly(delay_by_hour_plot)
@@ -232,17 +223,8 @@ air_time_distance_plot <- flights |>
   ggplot(aes(x = distance, y = air_time)) +
   geom_point(alpha = 0.3, color = "#9282ee") +
   geom_smooth(method = "lm", col = "#fc54fc") +
-  labs(title = "Air Time vs. Distance", x = "Distance (miles)", y = "Air Time (minutes)") +
-  theme_minimal(base_family = "Arial") +
-  theme(
-    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
-    plot.subtitle = element_text(size = 10, color = "#9282ee"),
-    axis.title.x = element_text(size = 12, color = "#272727"),
-    axis.title.y = element_text(size = 12, color = "#272727"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
-    axis.text.y = element_text(size = 10, color = "#272727"),
-    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
-  )
+  labs(title = "Air Time vs. Distance", x = "Distance (miles)", y = "Air Time (minutes)")
+
 air_time_distance_plot
 ```
 
@@ -285,16 +267,6 @@ busiest_routes_plot <- busiest_routes |>
     subtitle = "Based on number of flights",
     x = "Route",
     y = "Number of Flights"
-  ) +
-  theme_minimal(base_family = "Arial") +
-  theme(
-    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
-    plot.subtitle = element_text(size = 10, color = "#9282ee"),
-    axis.title.x = element_text(size = 12, color = "#272727"),
-    axis.title.y = element_text(size = 12, color = "#272727"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
-    axis.text.y = element_text(size = 10, color = "#272727"),
-    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
   )
 
 ggplotly(busiest_routes_plot)
@@ -340,16 +312,6 @@ flights_dayofweek_plot <- flights_dayofweek |>
     subtitle = "The data is clear - fly on weekdays to get off the ground on time!",
     x = "Day of the Week",
     y = "Average Departure Delay (minutes)"
-  ) +
-  theme_minimal(base_family = "Arial") +
-  theme(
-    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
-    plot.subtitle = element_text(size = 10, color = "#9282ee"),
-    axis.title.x = element_text(size = 12, color = "#272727"),
-    axis.title.y = element_text(size = 12, color = "#272727"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
-    axis.text.y = element_text(size = 10, color = "#272727"),
-    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
   )
 
 print(flights_dayofweek_plot)
@@ -394,15 +356,7 @@ plane_ages_plot <- plane_ages_data |>
     x = "Plane Age (Years)",
     y = "Carrier"
   ) +
-  theme_minimal(base_family = "Arial") +
   theme(
-    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
-    plot.subtitle = element_text(size = 10, color = "#9282ee"),
-    axis.title.x = element_text(size = 12, color = "#272727"),
-    axis.title.y = element_text(size = 12, color = "#272727"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
-    axis.text.y = element_text(size = 10, color = "#272727"),
-    panel.grid.major = element_line(color = "#ebd7f5"),  # Soft grid lines for a subtle look
     legend.position = "bottom",
     legend.box = "vertical",
     legend.title = element_text(face = "bold")
@@ -446,16 +400,6 @@ delay_satisfaction_carrier_plot <- sampled_flights |>
     x = "Arrival Delay (minutes)",
     y = "Average Customer Satisfaction"
   ) +
-  theme_minimal(base_family = "Arial") +
-  theme(
-    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
-    plot.subtitle = element_text(size = 10, color = "#9282ee"),
-    axis.title.x = element_text(size = 12, color = "#272727"),
-    axis.title.y = element_text(size = 12, color = "#272727"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),  # Tilting x-axis text for readability
-    axis.text.y = element_text(size = 10, color = "#272727"),
-    panel.grid.major = element_line(color = "#ebd7f5")  # Soft grid lines for a subtle look
-  ) + 
   scale_color_brewer(palette = "Set3") +  # Customize color palette
   facet_wrap(~ carrier, scales = "free_y", ncol = 4)  # Separate plots for each carrier
 

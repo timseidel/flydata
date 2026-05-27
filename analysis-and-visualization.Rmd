@@ -8,9 +8,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 # Load necessary libraries. These packages should be installed in your R environment.
+library(rio)       # For data import
 library(tidyverse)  # For data manipulation and visualization
-# ...
-# ...
 
 # Set chunk options to hide R code in the output and suppress warnings
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
@@ -173,15 +172,18 @@ FLYDATA begins by identifying the busiest routes. Insights into high-traffic cor
 
 
 ```{r busiest-routes-table, include=FALSE}
-# Transform so you get routes and count the number of flights!
+# Transform so you get routes (origin + dest) and count the number of flights!
+# Hint: group_by(origin, dest) + summarize(n())
 
-# Display a table
+# Display a table of the top routes
+# Hint: arrange(desc(...)) + head() + kable()
 
 ```
 
 
 ```{r busiest-routes-plot, fig.width=10}
-# Plot
+# Plot the top 10 busiest routes
+# Hint: top_n(10) + ggplot with reorder() on x and coord_flip() for readability
 
 ```
 
@@ -202,7 +204,10 @@ FLYDATA investigates whether certain days endure more delays, thus suggesting st
 ### Analysis
 
 ```{r delays-weekday-table}
-# Transform Data
+# Transform data to get average departure delay by day of the week
+# Hint: create weekday with weekdays(as.Date(paste(year, month, day, sep = "-")))
+# Hint: group_by(weekday) + summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+# Hint: arrange(match(weekday, c("Monday", ...))) to keep day order
 
 # Display Table
 
@@ -210,7 +215,8 @@ FLYDATA investigates whether certain days endure more delays, thus suggesting st
 
 
 ```{r delays-weekday-plot, fig.width=10}
-# Plot
+# Plot average departure delay by day of the week
+# Hint: geom_bar(stat = "identity") + geom_text() for labels
 
 ```
 
@@ -222,18 +228,24 @@ FLYDATA investigates whether certain days endure more delays, thus suggesting st
 
 ## 8. Aircraft Age Analysis
 
+<!-- 🏆 Stretch Goal — try this only if you have time left! -->
+
 ### Question
 
 Our analysis examines the relationship between aircraft age and usage, providing insights into fleet management strategies.
 
 
 ```{r aircraft-age-table, include=FALSE}
-# Prepare the data with plane ages, including both number of flights and number of planes per airline
+# Prepare the data with plane ages, including number of flights AND number of planes per airline
+# Hint: left_join(planes) to get plane year, left_join(airlines) for carrier name
+# Hint: mutate(plane_age = 2023 - year) to calculate age
+# Hint: group_by(plane_age, carrier) + summarize(n() for flights, n_distinct(tailnum) for planes)
 
 ```
 
 ```{r aircraft-age-plot, fig.width=10, fig.height=8}
 # Think about how to best vizualize that much infomation!
+# Hint: bubble plot with x = plane_age, y = carrier, size = number_of_flights, fill = number_of_planes
 
 ```
 
@@ -244,6 +256,8 @@ Our analysis examines the relationship between aircraft age and usage, providing
 <div style="text-align: center; margin-bottom: 100px"> </div>
 
 ## 9. Influences on Customer Satisfaction
+
+<!-- 🏆 Stretch Goal — try this only if you have time left! -->
 
 ### Question
 Customer satisfaction is a multidimensional aspect that's pivotal for the sustained success and reputation of airlines and airports. At FLYDATA, we analyze various factors influencing customer satisfaction to provide our clients with insights for enhancing passenger experiences and ensuring customer loyalty. Here's a look at some key insights into customer satisfaction:
@@ -256,6 +270,8 @@ one can plot with this data.-->
 
 ```{r satisfaction, fig.width=10}
 # Think about how to best vizualize that much infomation!
+# Hint: scatter plot of satisfaction vs arr_delay, colored/faceted by carrier
+# Hint: consider sampling flights to keep the plot readable
 
 ```
 
