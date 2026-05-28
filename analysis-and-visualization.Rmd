@@ -75,19 +75,51 @@ At FLYDATA, we specialize in transforming raw aviation data into actionable insi
 
 Knowing the total flight count for each airline provides our clients with crucial information to assess market share, identify competitive strengths, and spot potential opportunities for collaboration or strategic alliances. This data allows airlines to benchmark themselves against competitors, evaluate their fleet utilization, and optimize route planning.
 
+### Joining Data: A Quick Introduction
+
+Our `flights` dataset stores airlines by a two-letter carrier code
+(e.g., `"UA"`, `"B6"`, `"DL"`). But we want the full airline name
+for our clients. That information lives in a separate dataset called
+`airlines`, which has two columns: `carrier` (the code) and `name`
+(the full name).
+
+**Joining** is how we combine two tables using a common column —
+called a **key** — that appears in both. Think of it like a
+`VLOOKUP` in Excel: you look up a value in one table to bring in
+matching information from another.
+
+`left_join()` is the workhorse of the join family. It keeps all rows
+from the first (left) table and adds matching columns from the
+second (right) table:
+
+    left_join(right_table, by = "key_column")
+
+Here `"key_column"` is the name of the column that exists in **both**
+tables and links them together.
+
 ### Analysis
 
 ```{r number_flights}
-# Transform the Data
+# Step 1: Transform the Data
+# Group flights by carrier and count the number of flights per airline.
+# Store the result in a new variable: flights_by_airline
+# Hint: group_by(carrier) + summarize(number_of_flights = n()) + arrange(desc(...))
 
 
-# Join with airlines for full name and print
+# Step 2: Join with airlines to get full names
+# The 'flights_by_airline' table has a 'carrier' column (the two-letter code).
+# The 'airlines' table has both 'carrier' (same codes!) and 'name' (full name).
+# Since 'carrier' is the common key column, we can join them:
+#   flights_by_airline <- flights_by_airline |>
+#     left_join(airlines, by = "carrier")
+# This adds the 'name' column to your table — one column from airlines
+# for every matching row in flights_by_airline.
 
 
-# Print the summary
+# Step 3: Print the summary (basic)
 
 
-# Print the summary (in a nicer looking way)
+# Step 4: Print the summary (in a nicer looking way with kable)
 
 ```
 ### Findings
@@ -237,9 +269,27 @@ Our analysis examines the relationship between aircraft age and usage, providing
 
 ```{r aircraft-age-table, include=FALSE}
 # Prepare the data with plane ages, including number of flights AND number of planes per airline
-# Hint: left_join(planes) to get plane year, left_join(airlines) for carrier name
-# Hint: mutate(plane_age = 2023 - year) to calculate age
-# Hint: group_by(plane_age, carrier) + summarize(n() for flights, n_distinct(tailnum) for planes)
+#
+# We need information from THREE tables:
+#   flights  — has flight records and tail numbers
+#   planes   — has tail numbers and the year each plane was manufactured
+#   airlines — has carrier codes and full airline names
+#
+# Join them step by step in a pipeline:
+#
+#   flights |>
+#     left_join(planes, by = "tailnum")       # adds plane info (year manufactured, etc.)
+#     left_join(airlines, by = "carrier")      # adds the full airline name
+#
+# ⚠️ Heads up: both 'flights' and 'planes' have a column called 'year'.
+# After the first join, R will rename them to 'year.x' (from flights) and
+# 'year.y' (from planes). To calculate plane age, use year.y:
+#     mutate(plane_age = 2023 - year.y)
+#
+# Then group and summarize:
+#     group_by(plane_age, name) +
+#     summarize(number_of_flights = n(),
+#               number_of_planes = n_distinct(tailnum))
 
 ```
 

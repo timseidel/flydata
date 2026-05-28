@@ -32,13 +32,13 @@ min(flights$dep_time) # -99 seems to be used for NAs
 sort(table(flights$tailnum), decreasing = TRUE)
 
 # Replace erroneous or placeholder values with NA
-flights <- flights %>%
+flights <- flights |>
   # Convert -99 in numeric columns to NA
   mutate(across( # across all collums
     where(is.numeric), # tests for numeric data type
     # if -99: make it NA, else: do nothing, return data
     ~ ifelse(. == -99, NA, .)
-  )) %>%
+  )) |>
   # Convert "fehlend" in character columns to NA
   mutate(across(
     where(is.character),
@@ -48,9 +48,9 @@ flights <- flights %>%
 # Save Clean Data
 
 # Export the cleaned datasets back to RDS files for storage and future use
-rio::export(flights, "data/clean/flights.rds")
-rio::export(planes, "data/clean/planes.rds")
-rio::export(airlines, "data/clean/airlines.rds")
+rio::export(flights, "solutions/data/clean/flights.rds")
+rio::export(planes, "solutions/data/clean/planes.rds")
+rio::export(airlines, "solutions/data/clean/airlines.rds")
 
 # Combine and Analyze Customer Satisfaction Data --------
 
@@ -89,12 +89,10 @@ rm(customer_satisfaction)
 
 # Final Integration
 
-# Create a flight_id column for `flights` to enable proper data merging
-flights <- flights %>%
-  mutate(flight_id = row_number()) %>%# Create a sequential flight_id based on row order
-  # Join the flight satisfaction data with the flights dataset based on flight_id
+# Join the flight satisfaction data with the flights dataset based on flight_id
+flights <- flights |>
   left_join(flight_satisfaction, by = "flight_id")
 
-rio::export(flights, "data/clean/flights.rds")
+rio::export(flights, "solutions/data/clean/flights.rds")
 
 rm(flight_satisfaction)

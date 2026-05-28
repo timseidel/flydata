@@ -33,7 +33,14 @@ dir.create("data/clean", showWarnings = FALSE)
 # Remove the combined customer satisfaction dataset to free up memory
 
 # Final Integration
-# Create a sequential flight_id to enable merging satisfaction data with flights.
-# In this simulated dataset, satisfaction responses are matched by row position,
-# so row_number() provides the necessary join key.
+#
+# Both `flights` and `flight_satisfaction` already have a `flight_id` column
+# (a sequential number linking each flight to its satisfaction survey response).
+#
+# Use left_join() to bring satisfaction data into the flights table:
+#   flights <- flights |>
+#     left_join(flight_satisfaction, by = "flight_id")
+#
+# This adds punctuality_sat, comfort_sat, and crew_sat to every flight row.
+#
 # Export the cleaned datasets back to a .RDS file for storage and future use
