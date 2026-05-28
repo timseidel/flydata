@@ -45,12 +45,6 @@ flights <- flights |>
     ~ ifelse(. == "fehlend", NA, .)
   ))
 
-# Save Clean Data
-
-# Export the cleaned datasets back to RDS files for storage and future use
-rio::export(flights, "solutions/data/clean/flights.rds")
-rio::export(planes, "solutions/data/clean/planes.rds")
-rio::export(airlines, "solutions/data/clean/airlines.rds")
 
 # Combine and Analyze Customer Satisfaction Data --------
 
@@ -93,6 +87,10 @@ rm(customer_satisfaction)
 flights <- flights |>
   left_join(flight_satisfaction, by = "flight_id")
 
-rio::export(flights, "solutions/data/clean/flights.rds")
+# Save Clean Data
 
-rm(flight_satisfaction)
+# Export the cleaned datasets back to RDS files for storage and future use
+rio::export(flights, "solutions/data/clean/flights.rds")
+rio::export(planes, "solutions/data/clean/planes.rds")
+rio::export(airlines, "solutions/data/clean/airlines.rds")
+

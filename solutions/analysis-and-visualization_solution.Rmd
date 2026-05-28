@@ -69,18 +69,26 @@ At FLYDATA, we specialize in transforming raw aviation data into actionable insi
 ```{r mean_median_sd}
 # Summarize the mean, median, and standard deviation for departure delay, arrival delay, and air time
 # Use what you learned about the six verbes and display your summary as a table :) 
-flights_summary <- flights |>
-  reframe(
-    averages = c(mean(dep_delay, na.rm = TRUE),
-                 mean(arr_delay, na.rm = TRUE),
-                 mean(air_time, na.rm = TRUE)),
-    median = c(median(dep_delay, na.rm = TRUE),
-               median(arr_delay, na.rm = TRUE),
-               median(air_time, na.rm = TRUE)),
-    standard_deviation = c(sd(dep_delay, na.rm = TRUE),
-                           sd(arr_delay, na.rm = TRUE),
-                           sd(air_time, na.rm = TRUE))
-  ) |> mutate(variable = c("Departure Delay","Arrival Delay","Airtime"))
+flights_summary <- bind_rows(
+  flights |> summarize(
+    variable = "Departure Delay",
+    mean = mean(dep_delay, na.rm = TRUE),
+    median = median(dep_delay, na.rm = TRUE),
+    sd = sd(dep_delay, na.rm = TRUE)
+  ),
+  flights |> summarize(
+    variable = "Arrival Delay",
+    mean = mean(arr_delay, na.rm = TRUE),
+    median = median(arr_delay, na.rm = TRUE),
+    sd = sd(arr_delay, na.rm = TRUE)
+  ),
+  flights |> summarize(
+    variable = "Airtime",
+    mean = mean(air_time, na.rm = TRUE),
+    median = median(air_time, na.rm = TRUE),
+    sd = sd(air_time, na.rm = TRUE)
+  )
+)
 
 # Print the summary
 #print(flights_summary)
@@ -250,7 +258,7 @@ knitr::kable(head(busiest_routes, 10), caption = "Top 10 Busiest Routes from NYC
 
 ```{r busiest-routes-plot, fig.width=10}
 busiest_routes_plot <- busiest_routes |>
-  top_n(10, number_of_flights) |>
+  slice_max(number_of_flights, n = 10) |>
   ggplot(aes(x = reorder(paste(origin, dest, sep = " - "), number_of_flights), 
              y = number_of_flights)) +
   geom_bar(stat = "identity", fill = "#8434fc") +  # Using Electric Violet for the bars

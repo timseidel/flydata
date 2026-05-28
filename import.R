@@ -19,10 +19,6 @@ airlines <- import("data/raw/airlines.rds")
 # Replace erroneous or placeholder values with NA
 
 
-# Save Clean Data
-dir.create("data/clean", showWarnings = FALSE)
-# Export the cleaned datasets back to a .RDS file for storage and future use
-
 
 # Combine and Analyze Customer Satisfaction Data --------
 # Import customer satisfaction data from multiple files
@@ -34,13 +30,27 @@ dir.create("data/clean", showWarnings = FALSE)
 
 # Final Integration
 #
-# Both `flights` and `flight_satisfaction` already have a `flight_id` column
-# (a sequential number linking each flight to its satisfaction survey response).
+# Now we have two tables we want to combine:
+#   - flights: one row per flight, with dep_delay, carrier, etc.
+#   - flight_satisfaction: average satisfaction ratings per flight
 #
-# Use left_join() to bring satisfaction data into the flights table:
+# What is a Join?
+# A join combines two tables using a common column — called a key —
+# that appears in both. Think of it like a VLOOKUP in Excel: you look up
+# a value in one table to bring in matching information from another.
+#
+# Here, both tables already have a flight_id column. That's our key.
+# Each flight_id appears once in flights and once (or not at all) in
+# flight_satisfaction.
+#
+# left_join() keeps all rows from the first (left) table and adds
+# matching columns from the second (right):
+#
 #   flights <- flights |>
 #     left_join(flight_satisfaction, by = "flight_id")
 #
-# This adds punctuality_sat, comfort_sat, and crew_sat to every flight row.
+# This adds punctuality_sat, comfort_sat, and crew_sat to every flight.
+# For flights with no survey response, those columns will be NA.
 #
 # Export the cleaned datasets back to a .RDS file for storage and future use
+dir.create("data/clean", showWarnings = FALSE)

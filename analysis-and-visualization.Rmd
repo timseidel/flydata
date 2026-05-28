@@ -10,10 +10,27 @@ output: html_document
 # Load necessary libraries. These packages should be installed in your R environment.
 library(rio)       # For data import
 library(tidyverse)  # For data manipulation and visualization
+library(plotly)    # For interactive plots
+library(knitr)     # For nice tables
+library(kableExtra) # For extra table styling
 
 # Set chunk options to hide R code in the output and suppress warnings
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
+# FLYDATA custom theme for consistent, professional-looking plots
+theme_flydata <- theme_minimal(base_family = "Arial") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#241cfc"),
+    plot.subtitle = element_text(size = 10, color = "#9282ee"),
+    axis.title.x = element_text(size = 12, color = "#272727"),
+    axis.title.y = element_text(size = 12, color = "#272727"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, color = "#272727"),
+    axis.text.y = element_text(size = 10, color = "#272727"),
+    panel.grid.major = element_line(color = "#ebd7f5")
+  )
+
+# Set as default for all plots
+theme_set(theme_flydata)
 ```
 
 ## Introduction
@@ -39,7 +56,13 @@ Welcome to FLYDATA, where we transform aviation data into actionable insights. T
 
 
 ```{r load-data, include=FALSE}
-# This is where you should load the data you cleaned up and exportet in the import.R Document!
+# Load the cleaned datasets you exported in import.R
+# Hint: use import() for each of the three .rds files in data/clean/
+#
+#   flights <- import("data/clean/flights.rds")
+#   planes  <- import("data/clean/planes.rds")
+#   airlines <- import("data/clean/airlines.rds")
+
 ```
 
 ## 1. Descriptive Statistics
@@ -63,8 +86,10 @@ At FLYDATA, we specialize in transforming raw aviation data into actionable insi
 ```
 ### Findings
 
-
-<!-- What are your findings? -->
+<!-- Guiding questions:
+     - What is the mean vs median departure delay? What does that tell you?
+     - Are flights generally on time, early, or late?
+     - Why might the mean and median tell different stories? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -75,27 +100,15 @@ At FLYDATA, we specialize in transforming raw aviation data into actionable insi
 
 Knowing the total flight count for each airline provides our clients with crucial information to assess market share, identify competitive strengths, and spot potential opportunities for collaboration or strategic alliances. This data allows airlines to benchmark themselves against competitors, evaluate their fleet utilization, and optimize route planning.
 
-### Joining Data: A Quick Introduction
+### Joining Data (Review)
 
-Our `flights` dataset stores airlines by a two-letter carrier code
-(e.g., `"UA"`, `"B6"`, `"DL"`). But we want the full airline name
-for our clients. That information lives in a separate dataset called
-`airlines`, which has two columns: `carrier` (the code) and `name`
-(the full name).
+You already used a join in `import.R` to combine `flights` with
+`flight_satisfaction`. The same idea applies here: two tables share a
+common column, and `left_join()` brings matching information across.
 
-**Joining** is how we combine two tables using a common column —
-called a **key** — that appears in both. Think of it like a
-`VLOOKUP` in Excel: you look up a value in one table to bring in
-matching information from another.
-
-`left_join()` is the workhorse of the join family. It keeps all rows
-from the first (left) table and adds matching columns from the
-second (right) table:
-
-    left_join(right_table, by = "key_column")
-
-Here `"key_column"` is the name of the column that exists in **both**
-tables and links them together.
+The key this time is `carrier` — the two-letter airline code in our
+`flights_by_airline` table matches the `carrier` column in `airlines`,
+which also contains the full airline `name`.
 
 ### Analysis
 
@@ -123,7 +136,11 @@ tables and links them together.
 
 ```
 ### Findings
-<!-- What are your findings? -->
+
+<!-- Guiding questions:
+     - Which airline operates the most flights? Which the fewest?
+     - How did the left_join() change your table?
+     - What new column appeared after the join? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -136,20 +153,26 @@ We harness the power of data analytics to uncover seasonal trends that are pivot
 
 
 ```{r seasonal_trends, fig.width=10}
-# Recode months into names and prepare data for plotting
+# Prepare data: recode month numbers into abbreviated names using month.abb
+# Hint: mutate(month = factor(month.abb[month], levels = month.abb))
+# Then group_by(month) + summarize(number_of_flights = n())
 
 
-# Create a plot
-
+# Create a bar plot
+# Hint: ggplot(aes(x = month, y = number_of_flights)) +
+#       geom_bar(stat = "identity", fill = "#8434fc", width = 0.7)
 
 
 # Wrap the plot with Plotly for interactivity
+# Hint: ggplotly(your_plot_variable)
 
 ```
 ### Findings
 
-
-<!-- What are your findings? -->
+<!-- Guiding questions:
+     - Which month has the most flights? Which has the fewest?
+     - What seasonal patterns do you observe?
+     - Can you think of real-world reasons for these trends? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -163,14 +186,22 @@ By providing insights into these patterns, we help airlines and airports optimiz
 
 
 ```{r delay_throughout_day, fig.width=10}
-# Transform the data
+# Transform the data: group by hour and calculate average departure and arrival delays
+# Hint: group_by(hour) + summarize(avg_dep_delay = ..., avg_arr_delay = ...)
 
-# Plot
+
+# Plot both delay types over the course of the day
+# Hint: geom_line(aes(x = hour, y = avg_dep_delay, color = "dep_delay")) +
+#       geom_line(aes(x = hour, y = avg_arr_delay, color = "arr_delay"))
+# Hint: use ggplotly() for interactivity
 
 ```
 ### Findings
 
-<!-- What are your findings? -->
+<!-- Guiding questions:
+     - At what time of day do delays peak?
+     - How do departure and arrival delays compare throughout the day?
+     - Why might delays get worse as the day progresses? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -184,14 +215,19 @@ By offering a detailed analysis of the air time and distance relationship, we en
 
 
 ```{r distance_time, fig.width=10}
-# Plot
+# Create a scatter plot of air_time vs distance
+# Hint: ggplot(aes(x = distance, y = air_time)) +
+#       geom_point(alpha = 0.3, color = "#9282ee") +
+#       geom_smooth(method = "lm", col = "#fc54fc")
 
 ```
 
 ### Findings
 
-<!-- What are your findings? -->
-
+<!-- Guiding questions:
+     - How strong is the relationship between air time and distance?
+     - What does the regression line tell you?
+     - Are there any outliers? What might cause them? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -220,11 +256,14 @@ FLYDATA begins by identifying the busiest routes. Insights into high-traffic cor
 ```
 
 ### Findings
-<!-- What are your findings? -->
+
+<!-- Guiding questions:
+     - Which routes are the busiest? Which are the least busy?
+     - What do the top routes have in common (think about cities/airports)?
+     - How could airlines use this information? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
-
 
 
 ## 7. Delays by Day of the Week
@@ -253,7 +292,11 @@ FLYDATA investigates whether certain days endure more delays, thus suggesting st
 ```
 
 ### Findings
-<!-- What are your findings? -->
+
+<!-- Guiding questions:
+     - Which days have the highest delays? Which have the lowest?
+     - Why do you think weekend travel might cause more delays?
+     - How could airlines use this for staffing decisions? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -300,7 +343,11 @@ Our analysis examines the relationship between aircraft age and usage, providing
 ```
 
 ### Findings
-<!-- What are your findings? -->
+
+<!-- Guiding questions:
+     - Do older planes fly more or fewer flights?
+     - Which airlines operate the oldest fleets?
+     - How does fleet age differ across carriers? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -326,7 +373,11 @@ one can plot with this data.-->
 ```
 
 ### Conclusion
-<!-- What is your conclusion? -->
+
+<!-- Guiding questions:
+     - Which satisfaction dimension is most affected by delays?
+     - Which factors might matter more for comfort than for punctuality?
+     - How could airlines use these insights to improve? -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 100px"> </div>
@@ -334,6 +385,12 @@ one can plot with this data.-->
 ## Wind-Up!
 
 This demonstration from FLYDATA illustrates how our data-driven insights can shape operational excellence in the aviation industry. From understanding route dynamics to optimizing aircraft usage, FLYDATA empowers stakeholders to make informed decisions. For bespoke analysis and deeper dives into your specific needs, connect with our team to explore customized solutions.
+
+<!-- Before you finish up:
+     □ Knit the document to HTML
+     □ Check that all plots render correctly
+     □ Review your findings — do they tell a clear story?
+     □ Make sure your code runs without errors from top to bottom -->
 
 <!-- Empty HTML DIV for spacing. Increase or decrease the margin at will -->
 <div style="text-align: center; margin-bottom: 200px"> </div>
