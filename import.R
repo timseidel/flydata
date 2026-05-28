@@ -18,13 +18,6 @@ airlines <- import("data/raw/airlines.rds")
 # Rename a column in flights to correct a naming error
 # Replace erroneous or placeholder values with NA
 
-flights |>
-  mutate(dep_time = as.numeric(dep_time),
-         arr_time = as.numeric(arr_time),
-         dep_delay = case_when(dep_delay == -99 ~ NA,
-                              TRUE ~ dep_delay)) |>
-  rename(month = monthh) -> flights
-
 
 # Save Clean Data
 dir.create("data/clean", showWarnings = FALSE)
